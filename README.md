@@ -1,6 +1,8 @@
 # Lisptribe  
 
 这是一个基于开源项目[mal](https://github.com/kanaka/mal)实现的跨语言RPC控制框架  
+支持使用一种语言调用python, js, bash, powershell等多种语言的库及自定义函数  
+本身是一种lisp方言，具有无限拓展性  
 
 在`mal`不同平台解释器实现的基础上拓展解释器的功能， 增加`Socket`编程，网络通信，实现在多个语言解释器之间的`mal RPC`调用，通过`load-lib`函数将各平台语言的`native`函数暴露在`mal`解释器中，实现`mal`对原生语言的`RPC`调用  
 ```lisp
@@ -18,6 +20,7 @@ git clone git@github.com:guyuedumingx/lisptribe.git
 ```
 
 2. 运行想要运行的lisptribe客户端  
+
 python  
 ```bash
 cd python
