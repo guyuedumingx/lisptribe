@@ -76,7 +76,23 @@
 (def! cdr rest)
 (def! global (new-env))
 
+;;set remote server address
 (def! remote '(localhost 1234))
+
+(def! global-symbols
+    (fn* [] 
+        (map (fn* [x] (read-string x)) (global-symbols-string))))
+  
+(def! contains? 
+  (fn* [lst x]
+    (if (<= (count lst) 0)
+      false
+      (if (= (first lst) x)
+            true
+            (contains? (rest lst) x)))))
+
+;;download remote servers map
+;;(def! servers-map (read-string (use remote servers-map)))
 
 ;;core.lisp
 ;; (def! _macro? (fn* [x]

@@ -30,11 +30,11 @@
                 (pr-list (rest x))))))
 
 (defmacro! dotimes 
-  (fn* (xs & body)
-    (if (> xs 0)
+  (fn* (test & body)
+    (if (> test 0)
       (do 
         (eval (cons 'do body)) 
-        (eval (cons 'dotimes (conj body (- xs 1))))))))
+        (eval (cons 'dotimes (conj body (- test 1))))))))
 
 (def! bind-env (fn* [env b e]
   (if (empty? b)
@@ -76,12 +76,42 @@
 (def! cdr rest)
 (def! global (new-env))
 
-(def! python '(localhost 1235))
-(def! js '(localhost 1236))
-(def! powershell '(localhost 1237))
+(def! servers-map (hash-map
+  'python '(localhost 1235)
+  'js '(localhost 1236)
+  'powershell '(localhost 1237)))
 
+;; show that the mkdir method is belong to the server python 
+(def! method-map (hash-map
+  'powershell* (list 'quote (get servers-map 'powershell))
+  'py* (list 'quote (get servers-map 'python))
+  'py!* (list 'quote (get servers-map 'python))
+))
 
+(def! find-symbols-in-servers 
+  (fn* [server_list sym] 
+    (if (> (count server_list) 0)
+      (let* [res (eval (list 'use (list 'quote (get servers-map (first server_list))) (list 'contains? '(global-symbols) (list 'read-string (list 'str (list 'quote sym))))))]
+        (if (= (read-string res) true)
+          (list 'quote (get servers-map (first server_list)))
+          (find-symbols-in-servers (rest server_list) sym))))))
 
+(def! find-server-for-symbol
+  (fn* [x]
+    (if (nil? (get method-map x))
+      (find-symbols-in-servers (keys servers-map) x)
+      (get method-map x))))
+
+(defmacro! run-command-local-and-remote
+  (fn* [command]
+    (let* [sym (first command) inlocal (contains? (global-symbols) sym) server (find-server-for-symbol sym)]
+      (if inlocal
+        (eval command)
+        (if (nil? server)
+          (+ (+ "Error: " (str sym)) " not found")
+          (do
+            (set method-map x server)
+            (list 'use server command)))))))
 
 
 ;;core.lisp

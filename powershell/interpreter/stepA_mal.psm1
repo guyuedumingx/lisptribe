@@ -312,6 +312,8 @@ $_ = $repl_env.set((new-symbol "repl"), (Get-Command repl))
 $_ = $repl_env.set((new-symbol "server"), (Get-Command server))
 # $_ = $repl_env.set((new-symbol "exit"), )
 $_ = $repl_env.set((new-symbol "powershell*"), {param($a); Invoke-Expression $a});
+$_ = $repl_env.set((new-symbol "global-symbols-string"), {param(); return new-list (($repl_env.data.Keys -join ',').Split(','))})
+# $_ = $repl_env.set((new-symbol "global-symbols-string"), {param(); return $repl_env.data.Keys})
 # $_ = $repl_env.set((new-symbol "send-msg"), (Get-Command send_msg))
 
 

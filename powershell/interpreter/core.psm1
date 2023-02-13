@@ -173,6 +173,7 @@ $core_ns = @{
     "deref"   = { param($a); $a.value };
     "reset!"  = { param($a, $b); $a.value = $b; $b };
     "swap!"   = Get-Command swap_BANG;
+    "show-notice"   = Get-Command show_notice;
 }
 
 Export-ModuleMember -Variable core_ns

@@ -207,7 +207,7 @@ function run_command(line) {
         if (line) { return rep(line); }
     } catch (exc) {
         if (exc instanceof reader.BlankException) {
-            return; 
+            return ""; 
             }
         if (exc instanceof Error) { 
             return exc.stack
@@ -285,14 +285,15 @@ function load_lib(file_path) {
 repl_env.set(types._symbol('send-msg'),send_msg)
 repl_env.set(types._symbol('server'), server)
 repl_env.set(types._symbol('repl'), repl)
-repl_env.set(types._symbol('global-symbols'), ()=> {return Object.entries(repl_env.data).map(([key, value]) => key)})
+repl_env.set(types._symbol('global-symbols-string'), ()=> {return Object.entries(repl_env.data).map(([key, value]) => key)})
 repl_env.set(types._symbol('exit'), process.exit)
 repl_env.set(types._symbol('load-lib'), load_lib)
 
 module.exports = {
     repl_env,
     server,
-    repl
+    repl,
+    rep
 }
 
 // repl()

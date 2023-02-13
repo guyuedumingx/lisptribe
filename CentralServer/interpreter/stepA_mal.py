@@ -1,5 +1,5 @@
 import functools
-import sys, traceback
+import sys
 import mal_readline
 import mal_types as types
 import reader, printer
@@ -174,7 +174,7 @@ def send_msg(env, msg, wait=True):
     exp = printer._pr_str(msg)
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((env[0], env[1]))
-    client_socket.sendall(exp.encode())
+    client_socket.sendall(exp.encode('utf-8'))
     if wait:
         data = b'' 
         while True:
@@ -183,7 +183,7 @@ def send_msg(env, msg, wait=True):
             if len(data) < 1024:
                 client_socket.close()
                 break
-        return data.decode()
+        return data.decode('utf-8')
     else: 
         return ""
 
@@ -192,9 +192,10 @@ def run_command(line):
         return REP(line)
     except reader.Blank: return "" 
     except types.MalException as e:
-        return "Error:", printer._pr_str(e.object)
+        # return "Error:", printer._pr_str(e.object)
+        return "Error: " + str(e.object)
     except Exception as e:
-        return "".join(traceback.format_exception(*sys.exc_info()))
+        return str("Exception: "+ str(e))
 
 def server(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -211,7 +212,10 @@ def server(host, port):
             if len(data) < 1024:
                 break
         exp = exp.decode()
-        result = run_command(exp)
+        try: 
+            result = run_command("(run-command-local-and-remote "+ exp + ")")
+        except Exception as e:
+            result = str(e)
         client_sockt.sendall(result.encode('utf-8'))
         print(str(addr))
         print("Exp: " + str(exp))
@@ -246,7 +250,7 @@ def load_lib(file_path, package=None):
 repl_env.set(types._symbol('send-msg'), send_msg)
 repl_env.set(types._symbol('server'), server)
 repl_env.set(types._symbol('repl'), repl)
-repl_env.set(types._symbol('global-symbols'), lambda : list(repl_env.data.keys()))
+repl_env.set(types._symbol('global-symbols-string'), lambda : list(repl_env.data.keys()))
 repl_env.set(types._symbol('exit'), sys.exit)
 repl_env.set(types._symbol('load-lib'), load_lib)
 
