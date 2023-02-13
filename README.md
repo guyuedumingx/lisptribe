@@ -14,7 +14,7 @@
 
 1. 使用`git`将本项目克隆到本地  
 ```bash
-git clone git@github.com:guyuedumingx/lisptibe.git
+git clone git@github.com:guyuedumingx/lisptribe.git
 ```
 
 2. 运行想要运行的lisptribe客户端  
