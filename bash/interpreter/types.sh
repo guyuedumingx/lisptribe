@@ -368,5 +368,4 @@ _map_with_type () {
 _map () {
     _map_with_type _list "${@}"
 }
-
 fi

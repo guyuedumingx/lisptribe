@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# !/usr/bin/env bash
 
 source $(dirname $0)/reader.sh
 source $(dirname $0)/printer.sh
@@ -292,7 +292,6 @@ REP "(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (
 #   local -n map=$1
 #   echo "${!map[@]}"
 # }
-
 global_symbols_string () {
     "${REPL_ENV[@]}"
 }
