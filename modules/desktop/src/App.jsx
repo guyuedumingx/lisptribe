@@ -1,8 +1,8 @@
-// import { React, Component } from "react";
 import "./App.css";
 import { useState } from "react";
 import CommandField from "./components/CommandField";
 import HistorysBox from "./components/HistorysBox";
+import { run_command } from "./interpreter/stepA_mal.js";
 
 function App() {
     const [historys, setHistorys] = useState(
@@ -22,7 +22,7 @@ function App() {
       ]);
 
     const addReq = (req) => {
-        const newReq = {title: req, content: "Success"}
+        const newReq = {title: req, content: run_command(req)}
         setHistorys([...historys, newReq]);
     }
 
