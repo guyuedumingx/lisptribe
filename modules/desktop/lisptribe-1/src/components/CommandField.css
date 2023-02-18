@@ -1,0 +1,15 @@
+.input-box {
+    margin-top: 10;
+    background-color:rgb(234, 234, 234);
+    border-radius: 10px;
+    font-size: large;
+}
+
+.runbut {
+    background-color:rgb(61, 61, 61);
+}
+
+.butbox {
+    display: flex;
+    justify-content: flex-end;
+}
