@@ -2,13 +2,10 @@
 import "./App.css";
 import { useState } from "react";
 import CommandField from "./components/CommandField";
-import ResultBox from "./components/ResultBox";
-import { useRef } from "react";
-import { useEffect } from "react";
+import HistorysBox from "./components/HistorysBox";
 
 function App() {
-    const commandFieldRef = useRef()
-    const  [resultList, setResultList] = useState(
+    const [historys, setHistorys] = useState(
       [
         {
           title: "(global-symbols)",
@@ -23,23 +20,17 @@ function App() {
                   env-find-str env-get env-set car cdr global remote global-symbols *desktop*)"
         }
       ]);
-    const [question, setquestion] = useState("")
-    
-    const getQuestion = (val) => {
-      setquestion(val)
-      // console.log('val',val);
+
+    const addReq = (req) => {
+        const newReq = {title: req, content: "Success"}
+        setHistorys([...historys, newReq]);
     }
 
-    useEffect(()=>{
-      // console.log('question',question);
-      // 拿question return的value setResultList
-    },[question])
-    
     return (
       <div class="show-area">  
-        <CommandField getQuestion={getQuestion} />
-        {resultList.map(item =>
-          (<ResultBox title={item.title} content={item.content}/>)
+        <CommandField addReq={addReq}/>
+        {historys.map(item =>
+          (<HistorysBox title={item.title} content={item.content}/>)
         )}
       </div>
     );
