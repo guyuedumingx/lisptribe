@@ -1,0 +1,13 @@
+.result-box {
+    margin-top: 0.5em;
+    background-color:rgb(244, 244, 244);
+    border-radius: 10px;
+    color:rgb(61, 61, 61);
+    font-weight: normal;
+    font-size: medium;
+}
+
+.result-header {
+    color: rgb(74, 74, 74);
+    background-color: rgb(236, 236, 236);
+}

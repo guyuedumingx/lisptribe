@@ -201,7 +201,7 @@ def server(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))
     server_socket.listen(5)
-    print("Server run at: " + str(host) + ":" + str(port))
+    # print("Server run at: " + str(host) + ":" + str(port))
 
     while True:
         client_sockt, addr = server_socket.accept()
@@ -214,9 +214,9 @@ def server(host, port):
         exp = exp.decode('utf-8')
         result = run_command(exp)
         client_sockt.sendall(result.encode('utf-8'))
-        print(str(addr))
-        print("Exp: " + str(exp))
-        print("Result: " + result)
+        # print(str(addr))
+        # print("Exp: " + str(exp))
+        # print("Result: " + result)
         client_sockt.close()
 
 def repl(prompt='>>> '):

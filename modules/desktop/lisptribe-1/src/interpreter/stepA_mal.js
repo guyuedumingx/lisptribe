@@ -1,13 +1,10 @@
-if (typeof module !== 'undefined') {
-    var types = require('./types');
-    // var readline = require('./node_readline');
-    var readline = require('readline');
-    var reader = require('./reader');
-    var printer = require('./printer');
-    var Env = require('./env').Env;
-    var core = require('./core');
-    var EventEmitter = require('events');   var net = require('net')
-}
+import types from "./types";
+import readline from "readline";
+import reader from "./reader";
+import printer from "./printer";
+import { Env } from "./env";
+import { invoke } from "@tauri-apps/api";
+import ns from "./core";
 
 // read
 function READ(str) {
@@ -169,7 +166,7 @@ var repl_env = new Env();
 var rep = function(str) { return PRINT(EVAL(READ(str), repl_env)); };
 
 // core.js: defined using javascript
-for (var n in core.ns) { repl_env.set(types._symbol(n), core.ns[n]); }
+for (var n in ns) { repl_env.set(types._symbol(n), ns[n]); }
 repl_env.set(types._symbol('eval'), function(ast) {
     return EVAL(ast, repl_env); });
 repl_env.set(types._symbol('*ARGV*'), []);
@@ -181,26 +178,27 @@ rep("(def! load-file (fn* (f) (eval (read-string (str \"(do \" (slurp f) \"\nnil
 rep("(defmacro! cond (fn* (& xs) (if (> (count xs) 0) (list 'if (first xs) (if (> (count xs) 1) (nth xs 1) (throw \"odd number of forms to cond\")) (cons 'cond (rest (rest xs)))))))");
 
 
-const emitter1 = new EventEmitter();
-function send_msg(env, exp="") {
-    sendMessage(env, exp);
-    emitter1.once('data', data => {
-        console.log(data);
-    })
-    // return new Promise(resolve => {
-    // })
+// const emitter1 = Object.create(EventEmitter.prototype);
+// function send_msg(env, exp="") {
+//     sendMessage(env, exp);
+//     emitter1.once('data', data => {
+//         console.log(data);
+//     })
+// }
+async function send_msg(env, exp="") {
+    return await invoke('send_data_to_server', {host:env[1], port:env[0], data:exp.toString()})
 }
+// async function sendMessage(env, exp = "") {
+//     return await invoke("send_data_to_server", env[1], env[0], exp);
+// function sendMessage(env, exp = "") {
+//     let client_socket = new net.Socket();
+//     client_socket.connect(env[1], env[0]);
+//     client_socket.write(exp.toString());
 
-function sendMessage(env, exp = "") {
-    exp = printer._pr_str(exp)
-    let client_socket = new net.Socket();
-    client_socket.connect(env[1], env[0]);
-    client_socket.write(exp.toString());
-
-    client_socket.on('data', (msg) => {
-        emitter1.emit('data', msg.toString())
-    });
-}
+//     client_socket.on('data', (msg) => {
+//         emitter1.emit('data', msg.toString())
+//     });
+// }
 
 export function run_command(line) {
     try {
@@ -216,32 +214,6 @@ export function run_command(line) {
             return "Error: " + exc
         }
     }
-}
-
-function server(host, port=8124) {
-    const socket = net.createServer((socket) => {
-        console.log(`(${socket.remoteAddress}:${socket.remotePort})`);
-        const emitter = new EventEmitter();
-
-        emitter.on('data', (data) => {
-            console.log("Exp: " + data.toString());
-            let response = run_command(data.toString())
-            console.log("Result: " + response);
-            socket.write(response);
-        });
-
-        socket.on('data', (data) => {
-            emitter.emit('data', data);
-        });
-    });
-
-    socket.on('error', (err) => {
-        console.log(err);
-    });
-
-    socket.listen(port, host, () => {
-        console.log('Server run at: ' + port);
-    });
 }
 
 function repl(prompt=">>> ") {
@@ -272,6 +244,10 @@ function repl(prompt=">>> ") {
     })
 }
 
+/**
+ * TODO fix load-lib
+ * @param {*} file_path 
+ */
 function load_lib(file_path) {
     let mod = require(file_path.replace(/\.[^/.]+$/, ""));
     Object.entries(mod).forEach(([key, value]) => {
@@ -282,19 +258,9 @@ function load_lib(file_path) {
     })
 }
 
-repl_env.set(types._symbol('send-msg'),send_msg)
-repl_env.set(types._symbol('server'), server)
+repl_env.set(types._symbol('send-msg'), send_msg)
+// repl_env.set(types._symbol('server'), server)
 repl_env.set(types._symbol('repl'), repl)
 repl_env.set(types._symbol('global-symbols-string'), ()=> {return Object.entries(repl_env.data).map(([key, value]) => key)})
-repl_env.set(types._symbol('exit'), process.exit)
+// repl_env.set(types._symbol('exit'), process.exit)
 repl_env.set(types._symbol('load-lib'), load_lib)
-
-// export {
-//     repl_env,
-//     server,
-//     repl,
-//     rep,
-//     run_command
-// }
-
-// repl()

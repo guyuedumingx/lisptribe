@@ -14,15 +14,15 @@ export default (props) => {
                 onChange={(e)=>{setReq(e)}}
                 autoSize />
 
-            <div class="butbox">
-            <Button 
-                className='runbut' 
-                size="small" 
-                onClick={()=> {
-                    props.addReq(req);
-                    setReq("");
-                }}
-                type="primary">Run</Button>
+            <div className="butbox">
+                <Button 
+                    className='runbut' 
+                    size="small" 
+                    onClick={()=> {
+                        props.addReq(req);
+                        // setReq("");
+                    }}
+                    type="primary">Run</Button>
             </div> 
         </Cell>
     )
